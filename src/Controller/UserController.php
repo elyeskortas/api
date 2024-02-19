@@ -43,6 +43,13 @@ class UserController extends AbstractController
         return $this->apiController->respondWithSuccess($response);
     }
 
+    #[Route('/get/{id}', name: 'app_user_get_one')]
+    public function getOne($id)
+    {
+        // Get one user data and respond with success
+        return $this->apiController->respondWithSuccess($this->userRepository->getUser($this->userRepository->find($id)));
+    }
+
     #[Route('/add', name: 'app_user_add')]
     public function addUser(Request $request)
     {
@@ -63,7 +70,7 @@ class UserController extends AbstractController
         }
 
         // Validate user data
-        $errors = $this->validator->validate($this->userRepository->validateData($request));
+        $errors = $this->validator->validate($this->userRepository->validateData($request, 'add'));
         if (count($errors) > 0) {
             foreach ($errors as $error) {
                 $errorsArray[$error->getPropertyPath()] = $error->getMessage();
@@ -104,7 +111,7 @@ class UserController extends AbstractController
         }
 
         // Validate user data
-        $errors = $this->validator->validate($this->userRepository->validateData($request));
+        $errors = $this->validator->validate($this->userRepository->validateData($request, 'update', $id));
         if (count($errors) > 0) {
             foreach ($errors as $error) {
                 $errorsArray[$error->getPropertyPath()] = $error->getMessage();

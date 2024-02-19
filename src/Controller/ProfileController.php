@@ -44,7 +44,7 @@ class ProfileController extends AbstractController
         }
 
         // Validate user data
-        $errors = $this->validator->validate($this->userRepository->validateData($request));
+        $errors = $this->validator->validate($this->userRepository->validateData($request, 'update', $this->getUser()->getId()));
         if (count($errors) > 0) {
             foreach ($errors as $error) {
                 $errorsArray[$error->getPropertyPath()] = $error->getMessage();
@@ -71,25 +71,23 @@ class ProfileController extends AbstractController
         if (!$request->get('password')) {
             $errorsArray['password'] = 'This value should not be null.';
         }
-        if (!$request->get('confirmedPassword')) {
-            $errorsArray['confirmedPassword'] = 'This value should not be null.';
+        if (!$request->get('confirmPassword')) {
+            $errorsArray['confirmPassword'] = 'This value should not be null.';
         }
-        if ($request->get('password') !== $request->get('confirmedPassword') && $request->get('password') && $request->get('confirmedPassword')) {
+        if ($request->get('password') !== $request->get('confirmPassword') && $request->get('password') && $request->get('confirmPassword')) {
             $errorsArray['password'] = 'The passwords do not match.';
         }
         if (strlen($request->get('password')) < 8 && $request->get('password')) {
             $errorsArray['password'] = 'This value is too short. It should have 8 characters or more.';
         }
-        if (strlen($request->get('confirmedPassword')) < 8 && $request->get('confirmedPassword')) {
-            $errorsArray['confirmedPassword'] = 'This value is too short. It should have 8 characters or more.';
+        if (strlen($request->get('confirmPassword')) < 8 && $request->get('confirmPassword')) {
+            $errorsArray['confirmPassword'] = 'This value is too short. It should have 8 characters or more.';
         }
         if (count($errorsArray) > 0) {
             return $this->apiController->respondValidationError(($errorsArray));
         }
 
         $user = $this->userRepository->UpdatePassword($request, $this->getUser()->getId());
-
-
 
         return $this->apiController->response($this->userRepository->getUser($user), 'password updated successfully');
     }

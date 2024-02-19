@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use DateTimeImmutable;
 use DateTimeZone;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -26,7 +28,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
-    #[Assert\NotBlank]
     private ?string $email = null;
 
     #[ORM\Column]
@@ -46,7 +47,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotBlank(message: 'The field cannot be blank')]
     private ?string $lastName = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $birthdate = null;
 
     #[ORM\Column(length: 255)]
@@ -90,6 +91,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $updatedAt = null;
+
+    #[ORM\OneToMany(mappedBy: 'createdBy', targetEntity: Company::class)]
+    private Collection $companiesCreatedBy;
+
+    #[ORM\OneToMany(mappedBy: 'updatedBy', targetEntity: Company::class)]
+    private Collection $companiesUpdatedBy;
+
+    #[ORM\OneToMany(mappedBy: 'createdBy', targetEntity: Application::class)]
+    private Collection $applicationsCreatedBy;
+
+    #[ORM\OneToMany(mappedBy: 'updatedBy', targetEntity: Application::class)]
+    private Collection $applicationsUpdatedBy;
+
+    public function __construct()
+    {
+        $this->companiesCreatedBy = new ArrayCollection();
+        $this->companiesUpdatedBy = new ArrayCollection();
+        $this->applicationsCreatedBy = new ArrayCollection();
+        $this->applicationsUpdatedBy = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -190,7 +211,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->birthdate;
     }
 
-    public function setBirthdate(\DateTimeInterface $birthdate): static
+    public function setBirthdate(?\DateTimeInterface $birthdate): static
     {
         $this->birthdate = $birthdate;
 
@@ -361,6 +382,126 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setUpdatedAt(): static
     {
         $this->updatedAt = new DateTimeImmutable('now', new DateTimeZone('Africa/Tunis'));
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Company>
+     */
+    public function getCompaniesCreatedBy(): Collection
+    {
+        return $this->companiesCreatedBy;
+    }
+
+    public function addCompaniesCreatedBy(Company $companiesCreatedBy): static
+    {
+        if (!$this->companiesCreatedBy->contains($companiesCreatedBy)) {
+            $this->companiesCreatedBy->add($companiesCreatedBy);
+            $companiesCreatedBy->setCreatedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCompaniesCreatedBy(Company $companiesCreatedBy): static
+    {
+        if ($this->companiesCreatedBy->removeElement($companiesCreatedBy)) {
+            // set the owning side to null (unless already changed)
+            if ($companiesCreatedBy->getCreatedBy() === $this) {
+                $companiesCreatedBy->setCreatedBy(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Company>
+     */
+    public function getCompaniesUpdatedBy(): Collection
+    {
+        return $this->companiesUpdatedBy;
+    }
+
+    public function addCompaniesUpdatedBy(Company $companiesUpdatedBy): static
+    {
+        if (!$this->companiesUpdatedBy->contains($companiesUpdatedBy)) {
+            $this->companiesUpdatedBy->add($companiesUpdatedBy);
+            $companiesUpdatedBy->setUpdatedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCompaniesUpdatedBy(Company $companiesUpdatedBy): static
+    {
+        if ($this->companiesUpdatedBy->removeElement($companiesUpdatedBy)) {
+            // set the owning side to null (unless already changed)
+            if ($companiesUpdatedBy->getUpdatedBy() === $this) {
+                $companiesUpdatedBy->setUpdatedBy(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Application>
+     */
+    public function getApplicationsCreatedBy(): Collection
+    {
+        return $this->applicationsCreatedBy;
+    }
+
+    public function addApplicationsCreatedBy(Application $applicationsCreatedBy): static
+    {
+        if (!$this->applicationsCreatedBy->contains($applicationsCreatedBy)) {
+            $this->applicationsCreatedBy->add($applicationsCreatedBy);
+            $applicationsCreatedBy->setCreatedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeApplicationsCreatedBy(Application $applicationsCreatedBy): static
+    {
+        if ($this->applicationsCreatedBy->removeElement($applicationsCreatedBy)) {
+            // set the owning side to null (unless already changed)
+            if ($applicationsCreatedBy->getCreatedBy() === $this) {
+                $applicationsCreatedBy->setCreatedBy(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Application>
+     */
+    public function getApplicationsUpdatedBy(): Collection
+    {
+        return $this->applicationsUpdatedBy;
+    }
+
+    public function addApplicationsUpdatedBy(Application $applicationsUpdatedBy): static
+    {
+        if (!$this->applicationsUpdatedBy->contains($applicationsUpdatedBy)) {
+            $this->applicationsUpdatedBy->add($applicationsUpdatedBy);
+            $applicationsUpdatedBy->setUpdatedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeApplicationsUpdatedBy(Application $applicationsUpdatedBy): static
+    {
+        if ($this->applicationsUpdatedBy->removeElement($applicationsUpdatedBy)) {
+            // set the owning side to null (unless already changed)
+            if ($applicationsUpdatedBy->getUpdatedBy() === $this) {
+                $applicationsUpdatedBy->setUpdatedBy(null);
+            }
+        }
 
         return $this;
     }
