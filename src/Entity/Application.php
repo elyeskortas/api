@@ -48,6 +48,15 @@ class Application
     #[ORM\ManyToOne(inversedBy: 'applicationsUpdatedBy')]
     private ?User $updatedBy = null;
 
+    #[ORM\Column]
+    private ?bool $isActive = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $domain = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $modal = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -181,6 +190,42 @@ class Application
     public function setUpdatedBy(?User $updatedBy): static
     {
         $this->updatedBy = $updatedBy;
+
+        return $this;
+    }
+
+    public function getIsActive(): ?bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): static
+    {
+        $this->isActive = $isActive;
+
+        return $this;
+    }
+
+    public function getDomain(): ?string
+    {
+        return $this->domain;
+    }
+
+    public function setDomain(?string $domain): static
+    {
+        $this->domain = $domain;
+
+        return $this;
+    }
+
+    public function getModal(): ?string
+    {
+        return $this->modal;
+    }
+
+    public function setModal(string $modal): static
+    {
+        $this->modal = $modal;
 
         return $this;
     }
