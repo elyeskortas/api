@@ -47,12 +47,13 @@ class ApplicationRepository extends ServiceEntityRepository
         $application = new Application();
         $this->setApplicationData($application, $request, $photo);
         $application->setCreatedAt();
+        $application->setIsActive(true);
         $application->setCreatedBy($this->userService->getUserData());
         $this->saveApplication($application);
         return $application;
     }
 
-      /**
+    /**
      * Set application data based on the request, photo, and optional password.
      *
      * @param Application $application
@@ -67,12 +68,28 @@ class ApplicationRepository extends ServiceEntityRepository
         $application->setPrimaryColor($request->get('primaryColor') ?? $application->getPrimaryColor());
         $application->setSecondaryColor($request->get('secondaryColor') ?? $application->getSecondaryColor());
         $application->setType($request->get('type') ?? $application->getType());
-        $application->setLogo($photo ?? $application->getLogo());
+        $application->setLogo($request->get('useCompanyLogo') === 'true' ? $this->companyRepository->find($request->get('company'))->getPhoto() : $photo ?? $application->getLogo());
         $application->setCompany($this->companyRepository->find($request->get('company'))  ?? $application->getCompany());
         $application->setDomain($request->get('domain') ?? $application->getDomain());
         $application->setModal($request->get('modal') ?? $application->getModal());
+    }
 
-
+        /**
+     * Update application data based on the request, photo, and application ID.
+     *
+     * @param mixed $request
+     * @param mixed $photo
+     * @param int $id
+     * @return Application
+     */
+    public function updateData($request, $photo, $id)
+    {
+        $application = $this->find($id);
+        $this->setApplicationData($application, $request, $photo);
+        $application->setUpdatedAt();
+        $application->setUpdatedBy($this->userService->getUserData());
+        $this->saveApplication($application);
+        return $application;
     }
 
 
@@ -91,7 +108,7 @@ class ApplicationRepository extends ServiceEntityRepository
         return $application;
     }
 
-       /**
+    /**
      * Get an array representation of the application data.
      *
      * @param Application $application
@@ -118,7 +135,7 @@ class ApplicationRepository extends ServiceEntityRepository
         );
     }
 
-        /**
+    /**
      * Get an array representation of all application data.
      *
      * @return array
@@ -133,7 +150,7 @@ class ApplicationRepository extends ServiceEntityRepository
         return $data;
     }
 
-        /**
+    /**
      * Save application in database
      * 
      * @param Application $application

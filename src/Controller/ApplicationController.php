@@ -51,18 +51,20 @@ class ApplicationController extends AbstractController
         // Transform the JSON body of the request
         $request = $this->apiController->transformJsonBody($request);
 
-        // Handle application photo upload
-        $file = $request->files->get('photo');
         $photo = null;
-        if ($file) {
-            $filename =  $request->get('name') . $time->format('dmYHis') . '.' . $file->guessExtension();
-            $photo = '/photos/application/' . $filename;
-            $file->move('photos/application', $filename);
-        }
 
+        if ($request->get('useCompanyLogo') === 'false') {
+            // Handle application photo upload
+            $file = $request->files->get('logo');
+            if ($file) {
+                $filename =  $request->get('name') . $time->format('dmYHis') . '.' . $file->guessExtension();
+                $photo = '/photos/application/' . $filename;
+                $file->move('photos/application', $filename);
+            }
+        }
         // Save application data and send activation email
         $application = $this->applicationRepository->setData($request, $photo);
-      
+
         return $this->apiController->respondCreated($this->applicationRepository->getApplication($application), "Application added successefully");
     }
 
@@ -80,7 +82,7 @@ class ApplicationController extends AbstractController
         $request = $this->apiController->transformJsonBody($request);
 
         // Handle application photo upload
-        $file = $request->files->get('photo');
+        $file = $request->files->get('logo');
 
         $photo = null;
         if ($file) {
@@ -91,7 +93,7 @@ class ApplicationController extends AbstractController
 
         // Save updated application data
         $application = $this->applicationRepository->updateData($request, $photo, $id);
-        return $this->apiController->respondCreated($this->applicationRepository->getApplication($application) , "Application updated successefully");
+        return $this->apiController->respondCreated($this->applicationRepository->getApplication($application), "Application updated successefully");
     }
 
     #[Route('/update_active/{id}', name: 'app_application_active_or_inactive')]
