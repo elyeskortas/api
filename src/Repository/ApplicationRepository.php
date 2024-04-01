@@ -36,7 +36,7 @@ class ApplicationRepository extends ServiceEntityRepository
 
     
     /**
-     * Set data from the request, generate a random password, and persist the Application instance.
+     * Set data from the request
      *
      * @param mixed $request
      * @param mixed $photo

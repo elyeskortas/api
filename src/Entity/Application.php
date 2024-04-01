@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Repository\ApplicationRepository;
 use DateTimeImmutable;
 use DateTimeZone;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ApplicationRepository::class)]
@@ -56,6 +58,14 @@ class Application
 
     #[ORM\Column(length: 255)]
     private ?string $modal = null;
+
+    #[ORM\OneToMany(mappedBy: 'application', targetEntity: Page::class)]
+    private Collection $pages;
+
+    public function __construct()
+    {
+        $this->pages = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -226,6 +236,36 @@ class Application
     public function setModal(string $modal): static
     {
         $this->modal = $modal;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Page>
+     */
+    public function getPages(): Collection
+    {
+        return $this->pages;
+    }
+
+    public function addPage(Page $page): static
+    {
+        if (!$this->pages->contains($page)) {
+            $this->pages->add($page);
+            $page->setApplication($this);
+        }
+
+        return $this;
+    }
+
+    public function removePage(Page $page): static
+    {
+        if ($this->pages->removeElement($page)) {
+            // set the owning side to null (unless already changed)
+            if ($page->getApplication() === $this) {
+                $page->setApplication(null);
+            }
+        }
 
         return $this;
     }

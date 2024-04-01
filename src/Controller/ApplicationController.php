@@ -3,6 +3,9 @@
 namespace App\Controller;
 
 use App\Repository\ApplicationRepository;
+use App\Repository\MenuRepository;
+use App\Repository\PageRepository;
+use App\Service\ApplicationService;
 use DateTimeImmutable;
 use DateTimeZone;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -13,14 +16,23 @@ use Symfony\Component\Routing\Annotation\Route;
 class ApplicationController extends AbstractController
 {
     private $applicationRepository;
+    private $pageRepository;
+    private $menuRepository;
     private $apiController;
+    private $applicationService;
 
     public function __construct(
         ApplicationRepository $applicationRepository,
+        PageRepository $pageRepository,
+        MenuRepository $menuRepository,
+        ApplicationService $applicationService,
         ApiController $apiController,
     ) {
         // Dependency injection for various services and repositories
         $this->applicationRepository = $applicationRepository;
+        $this->pageRepository = $pageRepository;
+        $this->menuRepository = $menuRepository;
+        $this->applicationService = $applicationService;
         $this->apiController = $apiController;
     }
 
@@ -68,6 +80,19 @@ class ApplicationController extends AbstractController
         return $this->apiController->respondCreated($this->applicationRepository->getApplication($application), "Application added successefully");
     }
 
+    #[Route('/generate_page', name: 'app_application_add_pages')]
+    public function generatePage(Request $request)
+    {
+
+        // Transform the JSON body of the request
+        $request = $this->apiController->transformJsonBody($request);
+
+        $this->pageRepository->setData($request);
+        $this->menuRepository->setData($request);
+
+        return $this->apiController->respondCreated($this->applicationRepository->getApplication($this->applicationRepository->find($request->get('applicationId'))), "Application added successefully");
+    }
+
     #[Route('/update/{id}', name: 'app_application_update')]
     public function updateApplication(Request $request, $id)
     {
@@ -102,7 +127,6 @@ class ApplicationController extends AbstractController
         if (!$this->isGranted('ROLE_SUPER_ADMIN')) {
             return $this->apiController->respondUnauthorized("Not authorized to use this function");
         }
-
         // Check if application with the given ID exists
         if (!$this->applicationRepository->find($id)) {
             return $this->apiController->respondNotFound('Application not found');
