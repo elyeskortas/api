@@ -22,6 +22,9 @@ class Menu
     #[ORM\ManyToOne(inversedBy: 'menus')]
     private ?Page $page = null;
 
+    #[ORM\ManyToOne(inversedBy: 'menus')]
+    private ?Application $application = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -59,6 +62,18 @@ class Menu
     public function setPage(?Page $page): static
     {
         $this->page = $page;
+
+        return $this;
+    }
+
+    public function getApplication(): ?Application
+    {
+        return $this->application;
+    }
+
+    public function setApplication(?Application $application): static
+    {
+        $this->application = $application;
 
         return $this;
     }

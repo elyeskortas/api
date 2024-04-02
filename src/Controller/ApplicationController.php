@@ -89,7 +89,7 @@ class ApplicationController extends AbstractController
 
         $this->pageRepository->setData($request);
         $this->menuRepository->setData($request);
-
+        $this->applicationService->createApplication($this->applicationRepository->find($request->get('applicationId')));
         return $this->apiController->respondCreated($this->applicationRepository->getApplication($this->applicationRepository->find($request->get('applicationId'))), "Application added successefully");
     }
 

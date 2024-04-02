@@ -2,33 +2,84 @@
 
 namespace App\Service;
 
+use App\Repository\ApplicationRepository;
+use App\Repository\MenuRepository;
+use App\Repository\PageRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 
 class ApplicationService extends AbstractController
 {
 
     private $kernel;
+    private $applicationRepository;
+    private $menuRepository;
+    private $pageRepository;
 
-    public function __construct(KernelInterface $kernel)
+
+    public function __construct(
+        KernelInterface $kernel,
+        ApplicationRepository $applicationRepository,
+        MenuRepository $menuRepository,
+        PageRepository $pageRepository
+    )
     {
         $this->kernel = $kernel;
+        $this->applicationRepository = $applicationRepository;
+        $this->menuRepository = $menuRepository;
+        $this->pageRepository = $pageRepository;
     }
 
 
-    public function createApplication()
+    public function createApplication($application)
     {
         $filesystem = new Filesystem();
         $finder = new Finder();
 
         $projectDir = $this->kernel->getProjectDir();
         $parentDir = dirname($projectDir) . '/generate-app';
-        $filesystem->mirror($parentDir, $projectDir);
-        // $finder->directories()->in($projectDir)->name('original_folder_name');
+        $directory = dirname($projectDir) . '/' . $application->getName();
+
+        $filesystem->mirror($parentDir, $directory);
+
+        $filePath = $directory . '/src/app/shared/constants/data.json';
+        $content = '{"application" :' .
+          json_encode($this->applicationRepository->getApplication($application)) . ",\n" .
+            ' "menu": ' . json_encode($this->menuRepository->getMenuByApplication($application)) .  ",\n" .
+            ' "page": ' . json_encode($this->pageRepository->getPageByApplication($application)) .  "\n}" ;
+
+        file_put_contents($filePath, $content);
+
+        $file = fopen($filePath, 'r+');
 
 
-        var_dump($parentDir);
+
+        // // Create a new process
+        // $process = new Process(['ng', 'build']);
+        // $process->setWorkingDirectory($directory);
+        
+        // // Run the process
+        // $process->run();
+        
+        // // Check if the process was successful
+        // if (!$process->isSuccessful()) {
+        //     throw new ProcessFailedException($process);
+        // }
+        
+        // // Output the result of the command
+        // echo $process->getOutput();
+
+
+        // $finder->in($directory)->depth(0)->notName('docs')->notPath('docs/*');
+        // foreach ($finder as $file) {
+        //     $filesystem->remove($file->getRealPath());
+        // }
+        // $filesystem->mirror($directory . '/docs', $directory);
+        // $filesystem->remove($directory . '/docs');
+
     }
 }

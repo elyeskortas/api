@@ -59,11 +59,34 @@ class MenuRepository extends ServiceEntityRepository
             $menu->setIcon($data['icon']);
             $page = $this->pageRepository->findOneBy([
                 'title' => $data['title'],
-                'application'=> $this->applicationRepository->find($request->get('applicationId'))
+                'application' => $this->applicationRepository->find($request->get('applicationId'))
             ]);
+            $menu->setApplication($this->applicationRepository->find($request->get('applicationId')));
             $menu->setPage($page);
             $this->saveMenu($menu);
         }
+    }
+
+
+    /**
+     * @param Application $application
+     * @return array
+     */
+    public function getMenuByApplication($application)
+    {
+        $menus = $this->findBy(['application' => $application]);
+        $result = array();
+    
+        foreach ($menus as $menu) {
+            $result[$menu->getTitle()] = array(
+                "id" =>  $menu->getId(),
+                "title" =>  $menu->getTitle(),
+                "icon" =>  $menu->getIcon(),
+                "page" =>  $menu->getPage(),
+            );
+        }
+    
+        return $result;
     }
 
 

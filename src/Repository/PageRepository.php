@@ -65,6 +65,28 @@ class PageRepository extends ServiceEntityRepository
         }
     }
 
+        /**
+     * @param Application $application
+     * @return array
+     */
+    public function getPageByApplication($application)
+    {
+        $pages = $this->findBy(['application' => $application]);
+        $result = array();
+    
+        foreach ($pages as $page) {
+            $data = $page->getData();
+            $result[$page->getTitle()] = array(
+                "id" => $page->getId(),
+                "title" => $page->getTitle(),
+                "type" => $page->getType(),
+                "data" => is_array($data) ? $data : [],
+            );
+        }
+    
+        return $result;
+    }
+
 
     /**
      * Save page in database

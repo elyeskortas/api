@@ -62,9 +62,13 @@ class Application
     #[ORM\OneToMany(mappedBy: 'application', targetEntity: Page::class)]
     private Collection $pages;
 
+    #[ORM\OneToMany(mappedBy: 'application', targetEntity: Menu::class)]
+    private Collection $menus;
+
     public function __construct()
     {
         $this->pages = new ArrayCollection();
+        $this->menus = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -264,6 +268,36 @@ class Application
             // set the owning side to null (unless already changed)
             if ($page->getApplication() === $this) {
                 $page->setApplication(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Menu>
+     */
+    public function getMenus(): Collection
+    {
+        return $this->menus;
+    }
+
+    public function addMenu(Menu $menu): static
+    {
+        if (!$this->menus->contains($menu)) {
+            $this->menus->add($menu);
+            $menu->setApplication($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMenu(Menu $menu): static
+    {
+        if ($this->menus->removeElement($menu)) {
+            // set the owning side to null (unless already changed)
+            if ($menu->getApplication() === $this) {
+                $menu->setApplication(null);
             }
         }
 
