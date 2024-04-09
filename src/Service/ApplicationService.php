@@ -26,8 +26,7 @@ class ApplicationService extends AbstractController
         ApplicationRepository $applicationRepository,
         MenuRepository $menuRepository,
         PageRepository $pageRepository
-    )
-    {
+    ) {
         $this->kernel = $kernel;
         $this->applicationRepository = $applicationRepository;
         $this->menuRepository = $menuRepository;
@@ -38,7 +37,6 @@ class ApplicationService extends AbstractController
     public function createApplication($application)
     {
         $filesystem = new Filesystem();
-        $finder = new Finder();
 
         $projectDir = $this->kernel->getProjectDir();
         $parentDir = dirname($projectDir) . '/generate-app';
@@ -46,30 +44,37 @@ class ApplicationService extends AbstractController
 
         $filesystem->mirror($parentDir, $directory);
 
-        $filePath = $directory . '/src/app/shared/constants/data.json';
+        $filePath = $directory . '/src/assets/data/data.json';
         $content = '{"application" :' .
-          json_encode($this->applicationRepository->getApplication($application)) . ",\n" .
+            json_encode($this->applicationRepository->getApplication($application)) . ",\n" .
             ' "menu": ' . json_encode($this->menuRepository->getMenuByApplication($application)) .  ",\n" .
-            ' "page": ' . json_encode($this->pageRepository->getPageByApplication($application)) .  "\n}" ;
+            ' "page": ' . json_encode($this->pageRepository->getPageByApplication($application)) .  "\n}";
 
         file_put_contents($filePath, $content);
 
-        $file = fopen($filePath, 'r+');
 
+        $application = $this->applicationRepository->find($application);
+        $cssPath = $directory . '/src/assets/scss/_variables.scss';
 
+        $file = file_get_contents($cssPath);
+        // Close the file
+        $contentCss = '$primary:' . $application->getPrimaryColor() . ';' .  "\n" . '$secondary:' . $application->getSecondaryColor() . ';' .  "\n"
+        . '$light:'.   $application->getPrimaryColor() . '05' .';';
+
+        file_put_contents($cssPath, $contentCss . $file);
 
         // // Create a new process
         // $process = new Process(['ng', 'build']);
         // $process->setWorkingDirectory($directory);
-        
+
         // // Run the process
         // $process->run();
-        
+
         // // Check if the process was successful
         // if (!$process->isSuccessful()) {
         //     throw new ProcessFailedException($process);
         // }
-        
+
         // // Output the result of the command
         // echo $process->getOutput();
 

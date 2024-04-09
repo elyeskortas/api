@@ -72,6 +72,12 @@ class ApplicationRepository extends ServiceEntityRepository
         $application->setCompany($this->companyRepository->find($request->get('company'))  ?? $application->getCompany());
         $application->setDomain($request->get('domain') ?? $application->getDomain());
         $application->setModal($request->get('modal') ?? $application->getModal());
+        $application->setEmail($request->get('email') ?? $application->getEmail());
+        $application->setPhone($request->get('website') ?? $application->getPhone());
+        $application->setTemplate($request->get('template') ?? $application->getTemplate());
+        $application->setWebsite($request->get('phoneNumber') ?? $application->getWebsite());
+        $application->setAddress($request->get('address') ?? $application->getAddress());
+
     }
 
         /**
@@ -127,6 +133,11 @@ class ApplicationRepository extends ServiceEntityRepository
             "company" => $this->companyRepository->getCompany($application->getCompany()),
             "domain" =>  $application->getDomain(),
             "modal" =>  $application->getModal(),
+            "email" =>  $application->getEmail(),
+            "website" =>  $application->getWebsite(),
+            "template" =>  $application->getTemplate(),
+            "phoneNumber" =>  $application->getPhone(),
+            "address" =>  $application->getAddress(),
             "isActive" => $application->getIsActive(),
             "createdAt" => $application->getCreatedAt()->format('d/m/Y H:i:s'),
             "createdBy" => $this->userRepository->getUserMinimize($application->getCreatedBy()),
