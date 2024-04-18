@@ -53,7 +53,9 @@ class MenuRepository extends ServiceEntityRepository
      */
     private function setMenuData($request)
     {
-        foreach ($request->get('menu') as $data) {
+        $menu = $request->get('menu');
+
+        foreach ($menu as $data) {
             $menu = new Menu();
             $menu->setTitle($data['title']);
             $menu->setIcon($data['icon']);

@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\PageRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PageRepository::class)]
@@ -27,12 +28,14 @@ class Page
     #[ORM\OneToMany(mappedBy: 'page', targetEntity: Menu::class)]
     private Collection $menus;
 
-    #[ORM\Column(nullable: true)]
-    private ?array $data = null;
+    #[ORM\OneToMany(mappedBy: 'page', targetEntity: ItemPage::class)]
+    private Collection $itemPages;
+
 
     public function __construct()
     {
         $this->menus = new ArrayCollection();
+        $this->itemPages = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -106,15 +109,35 @@ class Page
         return $this;
     }
 
-    public function getData(): ?array
+    /**
+     * @return Collection<int, ItemPage>
+     */
+    public function getItemPages(): Collection
     {
-        return $this->data;
+        return $this->itemPages;
     }
 
-    public function setData(?array $data): static
+    public function addItemPage(ItemPage $itemPage): static
     {
-        $this->data = $data;
+        if (!$this->itemPages->contains($itemPage)) {
+            $this->itemPages->add($itemPage);
+            $itemPage->setPage($this);
+        }
 
         return $this;
     }
+
+    public function removeItemPage(ItemPage $itemPage): static
+    {
+        if ($this->itemPages->removeElement($itemPage)) {
+            // set the owning side to null (unless already changed)
+            if ($itemPage->getPage() === $this) {
+                $itemPage->setPage(null);
+            }
+        }
+
+        return $this;
+    }
+
+  
 }

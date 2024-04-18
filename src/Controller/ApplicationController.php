@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Repository\ApplicationRepository;
+use App\Repository\ItemPageRepository;
 use App\Repository\MenuRepository;
 use App\Repository\PageRepository;
 use App\Service\ApplicationService;
@@ -17,6 +18,7 @@ class ApplicationController extends AbstractController
 {
     private $applicationRepository;
     private $pageRepository;
+    private $itemPageRepository;
     private $menuRepository;
     private $apiController;
     private $applicationService;
@@ -24,6 +26,7 @@ class ApplicationController extends AbstractController
     public function __construct(
         ApplicationRepository $applicationRepository,
         PageRepository $pageRepository,
+        ItemPageRepository $itemPageRepository,
         MenuRepository $menuRepository,
         ApplicationService $applicationService,
         ApiController $apiController,
@@ -31,6 +34,7 @@ class ApplicationController extends AbstractController
         // Dependency injection for various services and repositories
         $this->applicationRepository = $applicationRepository;
         $this->pageRepository = $pageRepository;
+        $this->itemPageRepository = $itemPageRepository;
         $this->menuRepository = $menuRepository;
         $this->applicationService = $applicationService;
         $this->apiController = $apiController;
@@ -83,12 +87,12 @@ class ApplicationController extends AbstractController
     #[Route('/generate_page', name: 'app_application_add_pages')]
     public function generatePage(Request $request)
     {
-
         // Transform the JSON body of the request
         $request = $this->apiController->transformJsonBody($request);
 
-        $this->pageRepository->setData($request);
         $this->menuRepository->setData($request);
+        $this->pageRepository->setData($request);
+
         $this->applicationService->createApplication($this->applicationRepository->find($request->get('applicationId')));
         return $this->apiController->respondCreated($this->applicationRepository->getApplication($this->applicationRepository->find($request->get('applicationId'))), "Application added successefully");
     }

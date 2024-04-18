@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\ItemPage;
 use App\Entity\Page;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -17,10 +18,13 @@ use Doctrine\Persistence\ManagerRegistry;
 class PageRepository extends ServiceEntityRepository
 {
     private object $applicationRepository;
+    private object $itemPageRepository;
     public function __construct(
         ManagerRegistry $registry,
         ApplicationRepository $applicationRepository,
+        ItemPageRepository $itemPageRepository
     ) {
+        $this->itemPageRepository = $itemPageRepository;
         $this->applicationRepository = $applicationRepository;
         parent::__construct($registry, Page::class);
     }
@@ -49,23 +53,34 @@ class PageRepository extends ServiceEntityRepository
      */
     private function setPageData($request)
     {
-        foreach ($request->get('pages') as $data) {
+        $generatePage = $request->get('generatePage');
+        $pages = $request->get('pages');
+
+        foreach ($pages as $data) {
             $page = new Page();
             $page->setTitle($data['title']);
             $page->setType($data['type']);
             $page->setApplication($this->applicationRepository->find($request->get('applicationId')));
-            foreach ($request->get('generatePage') as $generatePage) {
-                if (array_key_exists('title', $generatePage)) {
-                    if ($data['title'] === $generatePage['title']) {
-                        $page->setData($generatePage['data']);
+            $this->savePage($page);
+            foreach ($generatePage as $gPage) {
+                if (array_key_exists('title', $gPage)) {
+                    if ($data['title'] === $gPage['title']) {
+                        foreach ($gPage['data'] as $data) {
+                            if ($data) {
+                                $itemPage = new ItemPage();
+                                $itemPage->setPage($page);
+                                $itemPage->setData(json_encode($data));
+                                $this->getEntityManager()->persist($itemPage);
+                                $this->getEntityManager()->flush();
+                            }
+                        }
                     }
                 }
             }
-            $this->savePage($page);
         }
     }
 
-        /**
+    /**
      * @param Application $application
      * @return array
      */
@@ -73,9 +88,15 @@ class PageRepository extends ServiceEntityRepository
     {
         $pages = $this->findBy(['application' => $application]);
         $result = array();
-    
+
         foreach ($pages as $page) {
-            $data = $page->getData();
+            $items = $this->itemPageRepository->findBy(['page' => $page]);
+            foreach ($items as $item) {
+                $data = array(
+                    json_decode($item->getData()),
+                );
+            }
+
             $result[$page->getTitle()] = array(
                 "id" => $page->getId(),
                 "title" => $page->getTitle(),
@@ -83,7 +104,8 @@ class PageRepository extends ServiceEntityRepository
                 "data" => is_array($data) ? $data : [],
             );
         }
-    
+   
+
         return $result;
     }
 
