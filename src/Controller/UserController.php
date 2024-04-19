@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-#[Route('/api/user/v1', name: 'app_user')]
+#[Route('/api/user', name: 'app_user')]
 class UserController extends AbstractController
 {
     private $emailService;

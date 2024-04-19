@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/auth/v1', name: 'app_auth')]
+#[Route('', name: 'app_auth')]
 class AuthController extends AbstractController
 {
     private $emailService;
@@ -56,8 +56,7 @@ class AuthController extends AbstractController
         // Check if the entered password is valid
         if (!$user || !$this->passwordHasher->isPasswordValid($user,  $request->get('password'))) {
             // Update failed login information and respond with an error
-            $user->setLastFailedLogin(new \DateTime());
-            $user->setFailedLoginCount($user->getFailedLoginCount() + 1);
+
             $this->entityManager->persist($user);
             $this->entityManager->flush();
             return $this->apiController->respondUnauthorized('Invalid credentials');
