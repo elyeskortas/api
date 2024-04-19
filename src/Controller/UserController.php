@@ -80,7 +80,7 @@ class UserController extends AbstractController
 
         // Save user data and send activation email
         $user = $this->userRepository->setData($request, $photo);
-        $subject = 'Platform EKLECTIC : Your user account has been added';
+        $subject = 'Your user account has been added';
         $body = $this->renderView('emails/send-to-active-account.html.twig', ['token' => $user->getTokenUpdatePassword(), 'user' => $user]);
         $this->emailService->sendEmail($user->getEmail(), $subject, $body);
 
@@ -161,7 +161,7 @@ class UserController extends AbstractController
 
         // Send forgot password email and respond with success
         $user = $this->userRepository->forgotPasswordEmail($id);
-        $subject = 'Platform EKLECTIC: forgot password';
+        $subject = 'forgot password';
         $body = $this->renderView('emails/send-to-update-password.html.twig', [
             'token' => $user->getTokenUpdatePassword(), 'user' => $user
         ]);

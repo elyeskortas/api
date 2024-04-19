@@ -115,7 +115,7 @@ class AuthController extends AbstractController
         $entityManager->flush();
 
         // Send email to the user for password change
-        $subject = 'Platform EKLECTIC: forgot password';
+        $subject = 'forgot password';
         $body = $this->renderView('emails/send-to-update-password.html.twig', [
             'token' => $token, 'user' => $user
         ]);
@@ -161,7 +161,7 @@ class AuthController extends AbstractController
                     $this->entityManager->flush();
 
                     // Send confirmation email
-                    $subject = 'Platform EKLECTIC : your password has been changed';
+                    $subject = 'your password has been changed';
                     $body =  $this->renderView('emails/update-password.html.twig', [
                         'user' => $user,
                     ]);
