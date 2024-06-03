@@ -10,14 +10,16 @@ class Vote
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(type: 'integer')]
+    private $id;
 
-    #[ORM\Column]
-    private ?int $userId = null;
+    #[ORM\Column(type: 'integer')]
+    private $userId;
 
-    #[ORM\Column(length: 255)]
-    private ?string $candidat = null;
+    /**
+     * @ORM\ManyToOne(targetEntity=Candidat::class)
+     */
+    private $candidat;
 
     public function getId(): ?int
     {
@@ -29,19 +31,19 @@ class Vote
         return $this->userId;
     }
 
-    public function setUserId(int $userId): static
+    public function setUserId(int $userId): self
     {
         $this->userId = $userId;
 
         return $this;
     }
 
-    public function getCandidat(): ?string
+    public function getCandidat(): ?Candidat
     {
         return $this->candidat;
     }
 
-    public function setCandidat(string $candidat): static
+    public function setCandidat(Candidat $candidat): self
     {
         $this->candidat = $candidat;
 

@@ -21,7 +21,7 @@ class PresentationController extends AbstractController
         $this->presentationRepository = $presentationRepository;
     }
 
-    #[Route('/presentations', name: 'presentation_add', methods: ['POST'])]
+    #[Route('/api/presentations', name: 'presentation_add', methods: ['POST'])]
     public function addPresentation(Request $request): Response
     {
         // Récupérer les données de la requête
@@ -40,7 +40,7 @@ class PresentationController extends AbstractController
         return $this->json(['message' => 'Présentation ajoutée avec succès'], Response::HTTP_CREATED);
     }
 
-    #[Route('/presentations/{id}', name: 'presentation_update', methods: ['PUT'])]
+    #[Route('/api/presentations/{id}', name: 'presentation_update', methods: ['PUT'])]
     public function updatePresentation(Request $request, int $id): Response
     {
         // Récupérer les données de la requête
@@ -64,7 +64,7 @@ class PresentationController extends AbstractController
         return $this->json(['message' => 'Présentation mise à jour avec succès'], Response::HTTP_OK);
     }
 
-    #[Route('/presentations/{id}', name: 'presentation_delete', methods: ['DELETE'])]
+    #[Route('/api/presentations/{id}', name: 'presentation_delete', methods: ['DELETE'])]
     public function deletePresentation(int $id): Response
     {
         // Récupérer la présentation à supprimer
@@ -81,7 +81,7 @@ class PresentationController extends AbstractController
         return $this->json(['message' => 'Présentation supprimée avec succès'], Response::HTTP_OK);
     }
 
-    #[Route('/presentations', name: 'presentation_list', methods: ['GET'])]
+    #[Route('/api/presentations/list', name: 'presentation_list', methods: ['GET'])]
     public function getPresentations(): Response
     {
         // Récupérer la liste des présentations

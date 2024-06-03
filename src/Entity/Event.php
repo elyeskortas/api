@@ -28,6 +28,12 @@ class Event
     #[ORM\Column]
     private ?bool $is_active = null;
 
+    #[ORM\Column]
+    private ?bool $is_playing = null;
+
+    #[ORM\Column]
+    private ?bool $is_paused = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -122,6 +128,28 @@ class Event
     public function setRestriction(?Restriction $restriction): self
     {
         $this->restriction = $restriction;
+
+        return $this;
+    }
+    public function getIsPlaying(): ?bool
+    {
+        return $this->is_playing;
+    }
+
+    public function setIsPlaying(bool $is_playing): self
+    {
+        $this->is_playing = $is_playing;
+
+        return $this;
+    }
+    public function isPaused(): ?bool // Getter pour la propriété is_paused
+    {
+        return $this->is_paused;
+    }
+
+    public function setIsPaused(bool $is_paused): static // Setter pour la propriété is_paused
+    {
+        $this->is_paused = $is_paused;
 
         return $this;
     }

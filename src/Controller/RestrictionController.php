@@ -21,7 +21,7 @@ class RestrictionController extends AbstractController
         $this->restrictionRepository = $restrictionRepository;
     }
 
-    #[Route('/restrictions', name: 'restriction_add', methods: ['POST'])]
+    #[Route('/api/restrictions', name: 'restriction_add', methods: ['POST'])]
     public function addRestriction(Request $request): Response
     {
         // Récupérer les données de la requête
@@ -29,7 +29,8 @@ class RestrictionController extends AbstractController
 
         // Créer une nouvelle instance de Restriction
         $restriction = new Restriction();
-        $restriction->setName($data['name']);
+        $restriction->setNom($data['name']);
+        $restriction->setStatut(true);
         // Ajouter d'autres propriétés selon votre entité Restriction
 
         // Persister la restriction
@@ -39,7 +40,7 @@ class RestrictionController extends AbstractController
         return $this->json(['message' => 'Restriction ajoutée avec succès'], Response::HTTP_CREATED);
     }
 
-    #[Route('/restrictions/{id}', name: 'restriction_update', methods: ['PUT'])]
+    #[Route('/api/restrictions/{id}', name: 'restriction_update', methods: ['PUT'])]
     public function updateRestriction(Request $request, int $id): Response
     {
         // Récupérer les données de la requête
@@ -53,7 +54,7 @@ class RestrictionController extends AbstractController
         }
 
         // Mettre à jour les propriétés de la restriction
-        $restriction->setName($data['name']);
+        $restriction->setNom($data['name']);
         // Mettre à jour d'autres propriétés selon votre entité Restriction
 
         // Persister les modifications
@@ -62,7 +63,7 @@ class RestrictionController extends AbstractController
         return $this->json(['message' => 'Restriction mise à jour avec succès'], Response::HTTP_OK);
     }
 
-    #[Route('/restrictions/{id}', name: 'restriction_delete', methods: ['DELETE'])]
+    #[Route('/api/restrictions/{id}', name: 'restriction_delete', methods: ['DELETE'])]
     public function deleteRestriction(int $id): Response
     {
         // Récupérer la restriction à supprimer
@@ -79,7 +80,7 @@ class RestrictionController extends AbstractController
         return $this->json(['message' => 'Restriction supprimée avec succès'], Response::HTTP_OK);
     }
 
-    #[Route('/restrictions', name: 'restriction_list', methods: ['GET'])]
+    #[Route('/api/restrictions/list', name: 'restriction_list', methods: ['GET'])]
     public function getRestrictions(): Response
     {
         // Récupérer la liste des restrictions

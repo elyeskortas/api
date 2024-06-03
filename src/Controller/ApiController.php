@@ -29,21 +29,22 @@ class ApiController extends AbstractController
     }
 
     /* General method for creating a JSON response
-     * Params:
-     *   - $data: The data to include in the response
-     *   - $headers: Additional headers for the response (optional)
-     * Returns:
-     *   - JsonResponse: The JSON response object
-     */
-    public function response($data, $headers)
-    {
-        $data = [
-            "message" => $headers,
-            'status' => $this->getStatusCode(),
-            'data' => $data,
-        ];
-        return new JsonResponse($data, $this->getStatusCode());
-    }
+ * Params:
+ *   - $data: The data to include in the response
+ *   - $message: The message to include in the response
+ * Returns:
+ *   - JsonResponse: The JSON response object
+ */
+public function response($data, $message)
+{
+    $responseData = [
+        "message" => $message,
+        'status' => $this->getStatusCode(),
+        'data' => $data,
+    ];
+    return new JsonResponse($responseData, $this->getStatusCode());
+}
+
 
     /* Respond with errors
      * Params:
@@ -94,10 +95,19 @@ class ApiController extends AbstractController
      * Returns:
      *   - JsonResponse: The JSON response object
      */
-    public function respondValidationError($message = 'Validation errors')
-    {
-        return $this->setStatusCode(422)->respondWithErrors($message);
+    public function respondValidationError($errors)
+{
+    if (is_array($errors)) {
+        // Si les erreurs sont un tableau, les convertir en une chaîne de caractères
+        $errorString = implode(', ', $errors);
+        // Retourner une réponse avec le message d'erreur
+        return new Response($errorString, Response::HTTP_BAD_REQUEST);
+    } else {
+        // Si les erreurs sont déjà une chaîne de caractères, retourner une réponse avec cette chaîne
+        return new Response($errors, Response::HTTP_BAD_REQUEST);
     }
+}
+
 
     /* Respond with not found error
      * Params:
@@ -188,3 +198,4 @@ class ApiController extends AbstractController
         return implode('', $pieces);
     }
 }
+ 

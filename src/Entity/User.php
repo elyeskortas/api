@@ -92,6 +92,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $updatedAt = null;
 
+    #[ORM\Column(type: "boolean")]
+    private ?bool $passwordResetRequired = false;
+
+    public function __construct()
+    {
+        $this->roles = [];
+    }
+
 
     public function getId(): ?int
     {
@@ -366,6 +374,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+    public function getPasswordResetRequired(): ?bool
+{
+    return $this->passwordResetRequired;
+}
 
 
 }

@@ -32,7 +32,7 @@ class Article
         return $this->title;
     }
 
-    public function setTitle(string $title): static
+    public function setTitle(string $title): self
     {
         $this->title = $title;
 
@@ -44,19 +44,19 @@ class Article
         return $this->content;
     }
 
-    public function setContent(string $content): static
+    public function setContent(string $content): self
     {
         $this->content = $content;
 
         return $this;
     }
 
-    public function isIsActive(): ?bool
+    public function getIsActive(): ?bool
     {
         return $this->isActive;
     }
 
-    public function setIsActive(bool $isActive): static
+    public function setIsActive(bool $isActive): self
     {
         $this->isActive = $isActive;
 

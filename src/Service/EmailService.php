@@ -17,7 +17,7 @@ class EmailService
     public function sendEmail(string $to, string $subject, string $body): void
     {
         $message = (new Email())
-            ->from('')
+            ->from('elyeskortas@gmail.com')
             ->to($to)
             ->subject($subject)
             ->html($body);

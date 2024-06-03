@@ -21,7 +21,7 @@ class CategorieController extends AbstractController
         $this->categorieRepository = $categorieRepository;
     }
 
-    #[Route('/categories', name: 'categorie_add', methods: ['POST'])]
+    #[Route('/api/categories', name: 'categorie_add', methods: ['POST'])]
     public function addCategorie(Request $request): Response
     {
         $data = json_decode($request->getContent(), true);
@@ -38,7 +38,7 @@ class CategorieController extends AbstractController
         return $this->json(['message' => 'Catégorie ajoutée avec succès'], Response::HTTP_CREATED);
     }
 
-    #[Route('/categories/{id}', name: 'categorie_update', methods: ['PUT'])]
+    #[Route('/api/categories/{id}', name: 'categorie_update', methods: ['PUT'])]
     public function updateCategorie(Request $request, int $id): Response
     {
         $data = json_decode($request->getContent(), true);
@@ -59,7 +59,7 @@ class CategorieController extends AbstractController
         return $this->json(['message' => 'Catégorie mise à jour avec succès'], Response::HTTP_OK);
     }
 
-    #[Route('/categories/{id}/toggle-status', name: 'categorie_toggle_status', methods: ['PUT'])]
+    #[Route('/api/categories/{id}/toggle-status', name: 'categorie_toggle_status', methods: ['PUT'])]
     public function toggleCategorieStatus(int $id): Response
     {
         // Récupérer la catégorie à activer/inactiver
@@ -80,7 +80,7 @@ class CategorieController extends AbstractController
         return $this->json(['message' => "Catégorie $statusMessage avec succès"], Response::HTTP_OK);
     }
 
-    #[Route('/categories', name: 'categorie_list', methods: ['GET'])]
+    #[Route('/api/categories/list', name: 'categorie_list', methods: ['GET'])]
     public function getCategories(): Response
     {
         // Récupérer la liste des catégories
