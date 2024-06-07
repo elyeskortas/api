@@ -99,7 +99,9 @@ public function login(Request $request, JWTTokenManagerInterface $JWTManager): R
     $userData = $this->userRepository->getUser($user);
 
     // Respond with success and user information
-    $userData += [
+    $userData = [
+        'id' => $user->getId(),
+        'email' => $user->getEmail(),
         'token' => $token
     ];
     return $this->apiController->respondWithSuccess($userData);

@@ -19,20 +19,31 @@ class Event
     #[ORM\Column(length: 255)]
     private ?string $description = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $start_date = null;
+    #[ORM\Column(type: "datetime")]
+    private ?\DateTimeInterface $startDate = null; // Change type to DateTime
 
-    #[ORM\Column(length: 255)]
-    private ?string $end_date = null;
+    #[ORM\Column(type: "datetime")]
+    private ?\DateTimeInterface $endDate = null; // Change type to DateTime
 
-    #[ORM\Column]
-    private ?bool $is_active = null;
-
-    #[ORM\Column]
-    private ?bool $is_playing = null;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $photo = null;
 
     #[ORM\Column]
-    private ?bool $is_paused = null;
+    private ?bool $isActive = null;
+
+    #[ORM\Column]
+    private ?bool $isPlaying = null;
+
+    #[ORM\Column]
+    private ?bool $isPaused = null;
+
+    #[ORM\ManyToOne(targetEntity: Election::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private $election;
+
+    #[ORM\ManyToOne(targetEntity: Restriction::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private $restriction;
 
     public function getId(): ?int
     {
@@ -63,57 +74,84 @@ class Event
         return $this;
     }
 
-    public function getStartDate(): ?string
+    public function getStartDate(): ?\DateTimeInterface
     {
-        return $this->start_date;
+        return $this->startDate;
     }
 
-    public function setStartDate(string $start_date): static
+    public function setStartDate(\DateTimeInterface $startDate): static
     {
-        $this->start_date = $start_date;
+        $this->startDate = $startDate;
 
         return $this;
     }
 
-    public function getEndDate(): ?string
+    public function getEndDate(): ?\DateTimeInterface
     {
-        return $this->end_date;
+        return $this->endDate;
     }
 
-    public function setEndDate(string $end_date): static
+    public function setEndDate(\DateTimeInterface $endDate): static
     {
-        $this->end_date = $end_date;
+        $this->endDate = $endDate;
 
         return $this;
     }
 
     public function isIsActive(): ?bool
     {
-        return $this->is_active;
+        return $this->isActive;
     }
 
-    public function setIsActive(bool $is_active): static
+    public function setIsActive(bool $isActive): static
     {
-        $this->is_active = $is_active;
+        $this->isActive = $isActive;
 
         return $this;
     }
-    #[ORM\ManyToOne(targetEntity: Election::class)]
-    #[ORM\JoinColumn(nullable: false)]
-    private $election;
 
-    #[ORM\ManyToOne(targetEntity: Restriction::class)]
-    #[ORM\JoinColumn(nullable: false)]
-    private $restriction;
+    public function getPhoto(): ?string
+    {
+        return $this->photo;
+    }
 
-    // Getters et Setters pour les propriétés
+    public function setPhoto(?string $photo): self
+    {
+        $this->photo = $photo;
+
+        return $this;
+    }
+
+    public function getIsPlaying(): ?bool
+    {
+        return $this->isPlaying;
+    }
+
+    public function setIsPlaying(bool $isPlaying): static
+    {
+        $this->isPlaying = $isPlaying;
+
+        return $this;
+    }
+
+    public function isPaused(): ?bool
+    {
+        return $this->isPaused;
+    }
+
+    public function setIsPaused(bool $isPaused): static
+    {
+        $this->isPaused = $isPaused;
+
+        return $this;
+    }
 
     public function getElection(): ?Election
     {
         return $this->election;
     }
 
-    public function setElection(?Election $election): self
+    public function setElection(?Election $election): static
     {
         $this->election = $election;
 
@@ -125,31 +163,9 @@ class Event
         return $this->restriction;
     }
 
-    public function setRestriction(?Restriction $restriction): self
+    public function setRestriction(?Restriction $restriction): static
     {
         $this->restriction = $restriction;
-
-        return $this;
-    }
-    public function getIsPlaying(): ?bool
-    {
-        return $this->is_playing;
-    }
-
-    public function setIsPlaying(bool $is_playing): self
-    {
-        $this->is_playing = $is_playing;
-
-        return $this;
-    }
-    public function isPaused(): ?bool // Getter pour la propriété is_paused
-    {
-        return $this->is_paused;
-    }
-
-    public function setIsPaused(bool $is_paused): static // Setter pour la propriété is_paused
-    {
-        $this->is_paused = $is_paused;
 
         return $this;
     }

@@ -134,4 +134,14 @@ public function getTotalElections(): Response
     return $this->json(['count' => $totalElections], Response::HTTP_OK);
 }
 
+public function getLastElectionResultats() {
+    $lastElection = Election::orderBy('date', 'desc')->first();
+    if ($lastElection) {
+        $resultats = $lastElection->resultats;
+        return response()->json($resultats);
+    } else {
+        return response()->json([]);
+    }
+}
+
 }

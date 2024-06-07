@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class ApiController extends AbstractController
 {
@@ -29,22 +30,21 @@ class ApiController extends AbstractController
     }
 
     /* General method for creating a JSON response
- * Params:
- *   - $data: The data to include in the response
- *   - $message: The message to include in the response
- * Returns:
- *   - JsonResponse: The JSON response object
- */
-public function response($data, $message)
-{
-    $responseData = [
-        "message" => $message,
-        'status' => $this->getStatusCode(),
-        'data' => $data,
-    ];
-    return new JsonResponse($responseData, $this->getStatusCode());
-}
-
+     * Params:
+     *   - $data: The data to include in the response
+     *   - $message: The message to include in the response
+     * Returns:
+     *   - JsonResponse: The JSON response object
+     */
+    public function response($data, $message)
+    {
+        $responseData = [
+            "message" => $message,
+            'status' => $this->getStatusCode(),
+            'data' => $data,
+        ];
+        return new JsonResponse($responseData, $this->getStatusCode());
+    }
 
     /* Respond with errors
      * Params:
@@ -91,23 +91,24 @@ public function response($data, $message)
 
     /* Respond with validation error
      * Params:
-     *   - $message: Custom error message (optional)
+     *   - $errors: Array|string: Les messages d'erreur de validation
      * Returns:
-     *   - JsonResponse: The JSON response object
+     *   - JsonResponse: L'objet de réponse JSON
      */
     public function respondValidationError($errors)
 {
-    if (is_array($errors)) {
-        // Si les erreurs sont un tableau, les convertir en une chaîne de caractères
-        $errorString = implode(', ', $errors);
-        // Retourner une réponse avec le message d'erreur
-        return new Response($errorString, Response::HTTP_BAD_REQUEST);
-    } else {
-        // Si les erreurs sont déjà une chaîne de caractères, retourner une réponse avec cette chaîne
-        return new Response($errors, Response::HTTP_BAD_REQUEST);
+    if (!is_array($errors)) {
+        // Si les erreurs ne sont pas déjà un tableau, convertissez-les en un tableau avec une seule entrée
+        $errors = [$errors];
     }
-}
 
+    $data = [
+        'status' => $this->getStatusCode(),
+        'errors' => $errors,
+    ];
+
+    return new JsonResponse($data, Response::HTTP_BAD_REQUEST);
+}
 
     /* Respond with not found error
      * Params:
@@ -198,4 +199,3 @@ public function response($data, $message)
         return implode('', $pieces);
     }
 }
- 
